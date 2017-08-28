@@ -10,7 +10,18 @@ class User extends Authenticatable
 {
     use Notifiable;
 
-    /*
+    /**
+     * Gravatar生成用户头像
+     */
+    public function gravatar($size='100'){
+        $hash = md5(strtolower(trim($this->attributes['email'])));
+        //使用this->attributes获取用户邮箱($this=user) strlolower 转换小写 trim 取出空格 md5加密
+        return "http://www.gravatar.com/avatar/$hash?s=$size";
+
+
+    }
+
+    /**
      * 指定和数据库交互的表名
      */
 
