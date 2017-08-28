@@ -1,4 +1,4 @@
-
+<!--闪存提示信息-->
 @if (count($errors) > 0)
     <div class="alert alert-danger">
         <ul>
