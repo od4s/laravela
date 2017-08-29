@@ -4,12 +4,28 @@ namespace App\Http\Controllers;
 
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+
 //use App\Http\Requests;
 
 
 
 class UsersController extends Controller
 {
+
+
+    /**
+     * 过滤http请求
+     * 权限系统
+     * 中间件
+     */
+    public function __construct(){
+        $this->middleware('auth',[
+            'except' => ['show','create','store']
+        ]);
+    }
+
+
     /**
      * 注册展示
      */
@@ -81,8 +97,65 @@ class UsersController extends Controller
      * 显示用户的个人信息
      */
     public function show(User $user){
+    //        if ($user->id == Auth::user()->id){
+    //            return view('users.show',compact('user'));
+    //        }else{
+    //            return redirect()->back();
+    //        }
+    //        return;
+            return view('users.show',compact('user'));
 
-
-        return view('users.show',compact('user'));
     }
+
+
+    /**
+     * 编辑用户资料页面
+     */
+
+    public function edit(User $user){
+
+    //        if ($user->id == Auth::user()->id){
+    //
+    //            return view('users.edit',compact('user'));
+    //        }else{
+    //            return redirect()->back();
+    //        }
+    //        return;
+        return view('users.edit',compact('user'));
+
+    }
+
+    /*
+     * 更改用户资料
+     */
+    /**
+     * required 来验证用户名是否为空,min和max限制用户名长度
+     * email 验证邮箱是否匹配 unique: 验证唯一性
+     * confirmed 验证密码两次输入是否一致
+     * nullable 可选验证
+     */
+
+    public function update(User $user,Request $request){
+            //验证
+            $this->validate($request,[
+                'name' => 'required|min:3|max:50',
+                'password' => 'nullable|min:8|confirmed',
+
+            ]);
+
+            $data = [];
+            $data['name'] = $request->name;
+            if ($request->password){
+                $data['password'] = $request->password;
+            }
+
+            $user->update($data);
+
+
+            session()->flash('success','个人资料更新成功!');
+
+           return redirect()->route('users.show',[$user->id]);
+
+    }
+
 }
